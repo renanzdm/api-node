@@ -3,18 +3,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const app = express();
 const router = express.Router();
+const config = require('./config');
+
+const app = express();
 
 
 //caregga models
 const Product = require('./models/product_model');
+const Customer = require('./models/customer');
+const Order = require('./models/order');
 
 
-mongoose.connect('mongodb+srv://renanzdm:404345682@nodestore.jqmty.mongodb.net/teste?retryWrites=true&w=majority',{ useNewUrlParser:true,useUnifiedTopology: true,useCreateIndex:true});
+mongoose.connect(config.connectionString, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 //carega routes
 const indexRoutes = require('./routes/index-route');
 const productRoutes = require('./routes/product-route');
+const customerRoutes = require('./routes/customer_route');
+const orderRoutes = require('./routes/order_route');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -25,6 +31,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', indexRoutes);
 app.use('/products', productRoutes);
+app.use('/customers', customerRoutes);
+app.use('/orders', orderRoutes);
 
 
 module.exports = app;
