@@ -3,6 +3,7 @@
 const ValidationContract = require('../validators/fluent-validator');
 const repository = require('../repositories/customer_repository');
 const md5 = require('md5');
+const emailservice = require('../services/email_service');
 
 
 exports.post = async (req, res, next) => {
@@ -22,6 +23,9 @@ exports.post = async (req, res, next) => {
             email: req.body.email,
             password: md5(req.body.password + global.SALT_KEY)
         });
+        emailservice.send(req.body.email,'Bem vindo',global.EMAIL_TMPL.replace('{0}',req.body.name));
+
+
         res.status(200).send({
             message: 'Sucess'
         });
