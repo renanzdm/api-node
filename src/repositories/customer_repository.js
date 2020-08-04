@@ -4,8 +4,11 @@
 const mongoose = require('mongoose');
 const Customer = mongoose.model('Customer');
 
-exports.get = async () => {
-    const res = await Product.find({ active: true }, 'title slug price');
+exports.authenticate = async (data) => {
+    const res = await Customer.findOne({ 
+        email:data.email,password:data.password
+     }
+     );
     return res;
 }
 exports.create = async (data) => {
