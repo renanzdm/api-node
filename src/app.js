@@ -22,8 +22,12 @@ const productRoutes = require('./routes/product-route');
 const customerRoutes = require('./routes/customer_route');
 const orderRoutes = require('./routes/order_route');
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    limit:'5m'
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
+
+
 
 
 

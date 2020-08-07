@@ -23,7 +23,8 @@ exports.post = async (req, res, next) => {
         await repository.create({
             name: req.body.name,
             email: req.body.email,
-            password: md5(req.body.password + global.SALT_KEY)
+            password: md5(req.body.password + global.SALT_KEY),
+            roles:['user']
         });
         emailservice.send(req.body.email, 'Bem vindo', global.EMAIL_TMPL.replace('{0}', req.body.name));
 
@@ -56,7 +57,38 @@ exports.authenticate = async (req, res, next) => {
             return;
         }
 
-        const token = await authService.generateToken({ email: customer.email, name: customer.name });
+        const token = await authService.generateToken({ email: customer.email, name: customer.name ,id:customer._id,roles:customer.roles});
+
+        res.status(200).send({
+           token:token,
+           data:{
+               email:customer.email,
+               name:customer.name
+           }
+        });
+    } catch (error) {
+        res.status(500).send({
+            message: "Falha na requisicao"
+        });
+    }
+
+
+};
+exports.refreshToken = async (req, res, next) => {
+
+    try {
+        const token = await req.body.token || req.query.token|| req.headers["x-access-token"];
+        const data = await authService.decodeToken(token);
+
+        const customer = await repository.getById(data.id);
+        if (!customer) {
+            res.status(404).send({
+                message:"Usuario não encontrado"
+            });
+            return;
+        }
+
+        const tokenData = await authService.generateToken({ email: customer.email, name: customer.name ,id:customer._id,roles:customer.roles});
 
         res.status(200).send({
            token:token,
